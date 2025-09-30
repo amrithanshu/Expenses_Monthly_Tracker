@@ -1,13 +1,37 @@
 stages:
+  - test
+  - deploy
   - run
 
-run_expense_tracker:
-  stage: run
-  image: python:3.11
+variables:
+  RESULTS_DIR: "results"
+
+# Test stage (linting or quick run check)
+test-job:
+  stage: test
+  image: python:3.10
   script:
-    - pip install --upgrade pip
-    - if [ -f requirements.txt ]; then pip install -r requirements.txt; else echo "No requirements.txt found"; fi
-    - python src/main.py
+    - pip install pandas matplotlib
+    - python --version
+    - echo "Checking CSV file presence..."
+    - test -f data/month_expenses.csv || (echo "❌ CSV missing!" && exit 1)
+    - echo "✅ Test stage passed!"
+
+# Deploy stage (simulated here)
+deploy-job:
+  stage: deploy
+  script:
+    - echo "Simulating deployment step..."
+    - echo "✅ Deploy successful!"
+
+# Run stage (execute your script and save results)
+run-job:
+  stage: run
+  image: python:3.10
+  script:
+    - pip install pandas matplotlib
+    - mkdir -p results
+    - python main.py
   artifacts:
     paths:
       - results/

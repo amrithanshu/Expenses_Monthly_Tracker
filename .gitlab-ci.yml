@@ -1,0 +1,36 @@
+stages:
+  - install
+  - run
+  - deploy
+
+# Stage 1: Install dependencies
+install_dependencies:
+  stage: install
+  image: python:3.11
+  script:
+    - pip install --upgrade pip
+    - if [ -f requirements.txt ]; then pip install -r requirements.txt; else echo "No requirements.txt found"; fi
+  cache:
+    paths:
+      - .cache/pip
+
+# Stage 2: Run the Expense Tracker
+run_expense_tracker:
+  stage: run
+  image: python:3.11
+  script:
+    - echo "Running Expense Tracker..."
+    - python src/main.py
+    - echo "Script completed"
+  artifacts:
+    paths:
+      - results/
+    expire_in: 1 week
+
+# Stage 3: Deploy (optional)
+deploy_job:
+  stage: deploy
+  script:
+    - echo "Deploy stage: You can add deployment steps here if needed"
+  environment: production
+  when: manual
